@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css">
+    <title>To-Do</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+        }
+
+        body, html {
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        .box {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .box.from-right {
+            transform: translateX(100px);
+        }
+
+        .box.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        #main {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #side-bar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #side-bar h2 {
+            color: white;
+            font-weight: 300;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #left-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #search-bar {
+            width: 80%;
+            max-width: 600px;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #search-bar:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.3);
+        }
+
+        #search-bar i {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        #search-bar:hover i {
+            transform: scale(1.1);
+            color: var(--accent);
+        }
+
+        #search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        #search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+
+        .task {
+            width: 80%;
+            max-width: 600px;
+            padding: 20px 25px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .circle {
+            width: 25px;
+            height: 25px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle:hover {
+            transform: scale(1.1);
+            border-color: var(--success);
+        }
+
+        .circle.completed {
+            border-color: var(--success);
+            background-color: var(--success);
+        }
+
+        .circle.completed::after {
+            content: '\f00c';
+            font-family: 'FontAwesome';
+            color: white;
+            font-size: 12px;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .task-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-icons i {
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-icons i:hover {
+            color: var(--accent);
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            #main {
+                flex-direction: column;
+            }
+            
+            #side-bar {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            #search-bar, .task {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <aside id="side-bar">
+            <h2>My Tasks</h2>
+        </aside>
+        <div id="left-side">
+            <div id="search-bar">
+                <i class="fa fa-plus-circle"></i>
+                <input type="text" placeholder="New task...">
+            </div>
+           
+            <div class="task box">
+                <span class="circle"></span>
+                <span class="task-text">Project presentation</span>
+                <span class="task-icons">
+                    <i class="fa fa-trash"></i>
+                </span>
+            </div>
+            <div class="task box from-right">
+                <span class="circle"></span>
+                <span class="task-text">Pending Assignment</span>
+                <span class="task-icons">
+                    <i class="fa fa-trash"></i>
+                </span>
+            </div>
+            <div class="task box">
+                <span class="circle"></span>
+                <span class="task-text">Call mom</span>
+                <span class="task-icons">
+                    <i class="fa fa-trash"></i>
+                </span>
+            </div>
+            <div class="task box from-right">
+                <span class="circle"></span>
+                <span class="task-text">Groceries</span>
+                <span class="task-icons">
+                    <i class="fa fa-trash"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function removal(obj) {
+            const task = obj.closest('.task');
+            if (task) {
+                task.style.transform = 'scale(0.9)';
+                task.style.opacity = '0';
+                setTimeout(() => task.remove(), 300);
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('fa-trash')) {
+                removal(event.target);
+            }
+            else if (event.target.classList.contains('circle')) {
+                toggleTaskCompletion(event.target);
+            }
+        });
+
+        function toggleTaskCompletion(circle) {
+            const taskText = circle.nextElementSibling;
+            circle.classList.toggle('completed');
+            taskText.classList.toggle('completed');
+        }
+
+        document.querySelector('#search-bar input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const value = event.target.value.trim();
+                if (value) {
+                    const tasksContainer = document.querySelector('#left-side');
+                    const newTask = document.createElement('div');
+                    newTask.className = 'task box ' + (Math.random() > 0.5 ? 'from-right' : '');
+                    newTask.innerHTML = `
+                        <span class="circle"></span>
+                        <span class="task-text">${value}</span>
+                        <span class="task-icons">
+                            <i class="fa fa-trash"></i>
+                        </span>
+                    `;
+                    const firstTask = document.querySelector('.task');
+                    tasksContainer.insertBefore(newTask, firstTask);
+                    event.target.value = "";
+                    observer.observe(newTask);
+                }
+            }
+        });
+
+        var counter = 1;
+        document.querySelectorAll('.task').forEach(v => {
+            if (counter % 2 == 0) {
+                v.classList.add('box');
+            } else {
+                v.classList.add('box');
+                v.classList.add('from-right');
+            }
+            counter++;
+        });
+
+        const observer = new IntersectionObserver(obj => {
+            obj.forEach(inner => {
+                if (inner.isIntersecting) {
+                    inner.target.classList.add('visible');
+                    observer.unobserve(inner.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.box').forEach(obj => {
+            observer.observe(obj);
+        });
+    </script>
+</body>
+</html>
