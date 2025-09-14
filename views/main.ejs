@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>To-Do</title>
+    
+</head>
+<body>
+    
+
+    <div id="main">
+        <aside id="side-bar">
+            <h2>My Tasks</h2>
+        </aside>
+        <div id="left-side">
+                <form method="POST" action="/inserter" id="search-bar">
+                    <i class="fa fa-plus-circle"></i>
+                    <input type="text" name="name" placeholder="New task..." required>
+                </form>
+
+
+          <% data.forEach(function(val){ %>
+                <div class="task box">
+                    <a href="/completer/<%=val._id%>">
+                        <span class="circle <%= val.status ? '':'completed' %>"></span>
+                    </a>
+                    <span class="task-text <%= val.status ?  '': 'completed' %>"><%= val.name %></span>
+                    <span class="task-icons">
+                        <a href="/deleter/<%=val._id%>"><i class="fa fa-trash"></i></a>
+                    </span>
+                </div>
+            <% }) %>
+
+
+
+        </div>
+    </div>
+
+    <script>
+       
+
+        //For Effect
+        const observer = new IntersectionObserver(obj => {
+            obj.forEach(inner => {
+                if (inner.isIntersecting) {
+                    inner.target.classList.add('visible');
+                    observer.unobserve(inner.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.box').forEach(obj => {
+            observer.observe(obj);
+        });
+    </script>
+
+</body>
